@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body{font-family:Arial,sans-serif;}
+    .settings, .color-picker { margin:10px;}
+    .color-btn { width:30px;height:30px;border:none;cursor:pointer;margin:3px;}
+    .grid { display:grid;grid-template-columns:repeat(5,60px);grid-gap:4px;}
+    .cell { border:1px solid #ccc;width:60px;height:60px;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<div class="settings">
+  <input id="roomId" placeholder="輸入房號">
+  <button id="enterBtn">進入</button>
+</div>
+
+<div class="color-picker">
+  <button class="color-btn" data-color="#FF5733" style="background:#FF5733"></button>
+  <button class="color-btn" data-color="#33FF57" style="background:#33FF57"></button>
+  <button class="color-btn" data-color="#3357FF" style="background:#3357FF"></button>
+  <button class="color-btn" data-color="#F3FF33" style="background:#F3FF33"></button>
+</div>
+
+<div id="grid" class="grid"></div>
+<button id="clearBtn">清空標記</button>
+
+<script>
+let selectedColor="#FF5733";
+
+document.querySelectorAll('.color-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedColor = btn.dataset.color;
+  });
+});
+
+const grid = document.getElementById('grid');
+for(let i=0;i<50;i++){
+  const cell=document.createElement('div');
+  cell.className="cell";
+  cell.onclick=()=>{cell.style.background=selectedColor};
+  grid.appendChild(cell);
+}
+
+document.getElementById('clearBtn').onclick = () => {
+  document.querySelectorAll('.cell').forEach(c=>c.style.background="");
+};
+</script>
+
+</body>
+</html>

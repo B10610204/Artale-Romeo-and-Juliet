@@ -23,7 +23,7 @@ h2 {
   flex-direction:column-reverse; /* 第1台階在最下面 */
   gap:8px;
   margin:20px auto;
-  max-width:400px; /* 依需求調整 */
+  max-width:400px; /* 調整整個格子區寬度 */
 }
 
 /* 每列：左台階 + 4格 */
@@ -53,45 +53,34 @@ h2 {
   background:#333;
   border-radius:8px;
   cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:12px;
-  word-break:break-word;
 }
 
 /* 控制面板 */
 .control {
   display:flex;
-  flex-direction:column;   /* 垂直排列每個顏色列 */
-  align-items:center;      /* 水平置中整個控制區 */
+  justify-content:center; /* 水平置中 */
+  flex-wrap:wrap;
+  gap:10px;
   margin:20px;
 }
 
-.color-row {
-  display:flex;
-  align-items:center;      /* 按鈕和輸入框垂直置中 */
-  margin:8px 0;
-}
-
-.color-row input {
-  width:80px;       /* 調整寬度，手機上不會太長 */
-  padding:4px 6px;  /* 內距讓文字不貼邊 */
-  text-align:center; /* 文字置中 */
-  font-size:14px;    /* 適合手機 */
-  border-radius:6px; /* 圓角好看 */
-  border:1px solid #ccc;
-  background:#222;
-  color:white;
-}
-
-.color-row button {
-  width:45px;
-  height:45px;
+.control button {
+  width:50px;
+  height:50px;
   border-radius:10px;
   border:none;
   cursor:pointer;
-  margin-right:8px;
+  flex-shrink:0;
+}
+
+/* 清空按鈕置中 */
+#clearAll {
+  margin:20px auto;
+  display:block;
+  padding:8px 20px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
 }
 
 /* 手機版縮小 */
@@ -106,6 +95,10 @@ h2 {
   .cell {
     font-size:10px;
   }
+  .control button {
+    width:40px;
+    height:40px;
+  }
 }
 </style>
 </head>
@@ -116,29 +109,13 @@ h2 {
 <div class="container" id="container"></div>
 
 <div class="control">
-  <div class="color-row">
-    <button style="background:red" data-color="red"></button>
-    <input placeholder="名字" data-input="red">
-  </div>
-  <div class="color-row">
-    <button style="background:blue" data-color="blue"></button>
-    <input placeholder="名字" data-input="blue">
-  </div>
-  <div class="color-row">
-    <button style="background:green" data-color="green"></button>
-    <input placeholder="名字" data-input="green">
-  </div>
-  <div class="color-row">
-    <button style="background:purple" data-color="purple"></button>
-    <input placeholder="名字" data-input="purple">
-  </div>
-  <div class="color-row">
-    <button style="background:white" data-color=""></button>
-    <span>清除格子</span>
-  </div>
+  <button style="background:red" data-color="red"></button>
+  <button style="background:blue" data-color="blue"></button>
+  <button style="background:green" data-color="green"></button>
+  <button style="background:purple" data-color="purple"></button>
+  <button style="background:white" data-color=""></button> <!-- 清空格子 -->
 </div>
 
-<br>
 <button id="clearAll">🧹 清空全部</button>
 
 <script type="module">
@@ -159,25 +136,23 @@ const db = getDatabase(app);
 let selectedColor = "red";
 
 const container = document.getElementById("container");
-const cellRefs = []; // 存格子 DOM
+const cellRefs = [];
 
 // 建立 10 列，每列 4 格
-for (let row = 10; row >= 1; row--) { // 10~1，第1台階最下面
+for (let row = 10; row >= 1; row--) {
   const rowDiv = document.createElement("div");
   rowDiv.className = "row";
 
-  // 左側台階
   const rowNumber = document.createElement("div");
   rowNumber.className = "row-number";
   rowNumber.innerText = `第${row}台階`;
   rowDiv.appendChild(rowNumber);
 
-  // 右側格子容器
   const cellsDiv = document.createElement("div");
   cellsDiv.className = "cells";
 
   for (let col = 0; col < 4; col++) {
-    const idx = (10 - row) * 4 + col; // ID 0~39
+    const idx = (10 - row) * 4 + col;
     const cell = document.createElement("div");
     cell.className = "cell";
     cell.id = "cell_" + idx;
@@ -186,11 +161,8 @@ for (let row = 10; row >= 1; row--) { // 10~1，第1台階最下面
       if (selectedColor === "") {
         remove(ref(db, "grid/" + idx));
       } else {
-        const nameInput = document.querySelector(`input[data-input="${selectedColor}"]`);
-        const name = nameInput.value || "";
         set(ref(db, "grid/" + idx), {
-          color: selectedColor,
-          name: name
+          color: selectedColor
         });
       }
     };
@@ -204,7 +176,7 @@ for (let row = 10; row >= 1; row--) { // 10~1，第1台階最下面
 }
 
 // 選顏色
-document.querySelectorAll("button[data-color]").forEach(btn => {
+document.querySelectorAll(".control button").forEach(btn => {
   btn.onclick = () => {
     selectedColor = btn.dataset.color;
   };
@@ -215,13 +187,11 @@ onValue(ref(db, "grid"), (snapshot) => {
   const data = snapshot.val() || {};
   cellRefs.forEach(c => {
     c.style.background = "#333";
-    c.innerText = "";
   });
   for (let i in data) {
     const cell = document.getElementById("cell_" + i);
     if (cell) {
       cell.style.background = data[i].color;
-      cell.innerText = data[i].name || "";
     }
   }
 });

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>同步工具 4x10 每列對齊台階</title>
+<style>
+body {
+  background:#111;
+  color:white;
+  font-family:Arial, sans-serif;
+  margin:0;
+  padding:0;
+  text-align:center;
+}
+
+h2 {
+  margin-top:20px;
+}
+
+/* 整個格子區 */
+.container {
+  display:flex;
+  flex-direction:column-reverse; /* 第1台階在最下面 */
+  gap:8px;
+  margin:20px auto;
+  max-width:400px; /* 依需求調整 */
+}
+
+/* 每列：左台階 + 4格 */
+.row {
+  display:flex;
+  align-items:center; /* 高度統一 */
+  gap:8px;
+}
+
+/* 左側台階 */
+.row-number {
+  width:80px;
+  text-align:right;
+}
+
+/* 右側格子容器 */
+.cells {
+  display:flex;
+  flex:1;
+  gap:8px;
+}
+
+/* 單格 */
+.cell {
+  flex:1;
+  aspect-ratio:1/1; /* 正方形 */
+  background:#333;
+  border-radius:8px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  word-break:break-word;
+}
+
+/* 控制面板 */
+.control {
+  display:flex;
+  flex-direction:column;   /* 垂直排列每個顏色列 */
+  align-items:center;      /* 水平置中整個控制區 */
+  margin:20px;
+}
+
+.color-row {
+  display:flex;
+  align-items:center;      /* 按鈕和輸入框垂直置中 */
+  margin:8px 0;
+}
+
+.color-row input {
+  width:80px;       /* 調整寬度，手機上不會太長 */
+  padding:4px 6px;  /* 內距讓文字不貼邊 */
+  text-align:center; /* 文字置中 */
+  font-size:14px;    /* 適合手機 */
+  border-radius:6px; /* 圓角好看 */
+  border:1px solid #ccc;
+  background:#222;
+  color:white;
+}
+
+.color-row button {
+  width:45px;
+  height:45px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  margin-right:8px;
+}
+
+/* 手機版縮小 */
+@media(max-width:500px) {
+  .container {
+    max-width:90vw;
+  }
+  .row-number {
+    width:60px;
+    font-size:12px;
+  }
+  .cell {
+    font-size:10px;
+  }
+}
+</style>
+</head>
+<body>
+
+<h2>同步標記工具（4x10 每列對齊台階）</h2>
+
+<div class="container" id="container"></div>
+
+<div class="control">
+  <div class="color-row">
+    <button style="background:red" data-color="red"></button>
+    <input placeholder="名字" data-input="red">
+  </div>
+  <div class="color-row">
+    <button style="background:blue" data-color="blue"></button>
+    <input placeholder="名字" data-input="blue">
+  </div>
+  <div class="color-row">
+    <button style="background:green" data-color="green"></button>
+    <input placeholder="名字" data-input="green">
+  </div>
+  <div class="color-row">
+    <button style="background:purple" data-color="purple"></button>
+    <input placeholder="名字" data-input="purple">
+  </div>
+  <div class="color-row">
+    <button style="background:white" data-color=""></button>
+    <span>清除格子</span>
+  </div>
+</div>
+
+<br>
+<button id="clearAll">🧹 清空全部</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+// 🔴 Firebase 設定
+const firebaseConfig = {
+  apiKey: "AIzaSyBAs8oRMsuCePNxSoes4X-MLXbLuqr0P7w",
+  authDomain: "artale-romeo-and-juliet.firebaseapp.com",
+  databaseURL: "https://artale-romeo-and-juliet-default-rtdb.firebaseio.com",
+  projectId: "artale-romeo-and-juliet"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let selectedColor = "red";
+
+const container = document.getElementById("container");
+const cellRefs = []; // 存格子 DOM
+
+// 建立 10 列，每列 4 格
+for (let row = 10; row >= 1; row--) { // 10~1，第1台階最下面
+  const rowDiv = document.createElement("div");
+  rowDiv.className = "row";
+
+  // 左側台階
+  const rowNumber = document.createElement("div");
+  rowNumber.className = "row-number";
+  rowNumber.innerText = `第${row}台階`;
+  rowDiv.appendChild(rowNumber);
+
+  // 右側格子容器
+  const cellsDiv = document.createElement("div");
+  cellsDiv.className = "cells";
+
+  for (let col = 0; col < 4; col++) {
+    const idx = (10 - row) * 4 + col; // ID 0~39
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.id = "cell_" + idx;
+
+    cell.onclick = () => {
+      if (selectedColor === "") {
+        remove(ref(db, "grid/" + idx));
+      } else {
+        const nameInput = document.querySelector(`input[data-input="${selectedColor}"]`);
+        const name = nameInput.value || "";
+        set(ref(db, "grid/" + idx), {
+          color: selectedColor,
+          name: name
+        });
+      }
+    };
+
+    cellsDiv.appendChild(cell);
+    cellRefs.push(cell);
+  }
+
+  rowDiv.appendChild(cellsDiv);
+  container.appendChild(rowDiv);
+}
+
+// 選顏色
+document.querySelectorAll("button[data-color]").forEach(btn => {
+  btn.onclick = () => {
+    selectedColor = btn.dataset.color;
+  };
+});
+
+// 同步
+onValue(ref(db, "grid"), (snapshot) => {
+  const data = snapshot.val() || {};
+  cellRefs.forEach(c => {
+    c.style.background = "#333";
+    c.innerText = "";
+  });
+  for (let i in data) {
+    const cell = document.getElementById("cell_" + i);
+    if (cell) {
+      cell.style.background = data[i].color;
+      cell.innerText = data[i].name || "";
+    }
+  }
+});
+
+// 清空全部
+document.getElementById("clearAll").onclick = () => {
+  remove(ref(db, "grid"));
+};
+</script>
+
+</body>
+</html>

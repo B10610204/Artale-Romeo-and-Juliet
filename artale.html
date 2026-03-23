@@ -3,126 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <title>Artale羅密歐與茱麗葉組隊任務</title>
+
 <style>
 body {
   background:#111;
   color:white;
   font-family:Arial, sans-serif;
   margin:0;
-  padding:0;
-  text-align:center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
 
-h2 {
-  margin-top:20px;
+/* 🔒 密碼畫面 */
+#lockScreen {
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:#111;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
 }
 
-/* 整個格子區 */
+/* 卡片 */
+.wrapper {
+  background:#1b1b1b;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 0 20px rgba(0,0,0,0.5);
+  width:420px;
+}
+
+.top-bar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.control {
+  display:flex;
+  gap:8px;
+}
+
+.control button {
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+}
+
 .container {
   display:flex;
-  flex-direction:column-reverse; /* 第1台階在最下面 */
+  flex-direction:column-reverse;
   gap:8px;
-  margin:20px auto;
-  max-width:400px; /* 調整整個格子區寬度 */
 }
 
-/* 每列：左台階 + 4格 */
 .row {
   display:flex;
-  align-items:center; /* 高度統一 */
+  align-items:center;
   gap:8px;
 }
 
-/* 左側台階 */
 .row-number {
-  width:80px;
-  text-align:right;
+  width:40px;
+  text-align:center;
+  background:#000;
+  border-radius:8px;
+  padding:6px 0;
 }
 
-/* 右側格子容器 */
 .cells {
   display:flex;
   flex:1;
   gap:8px;
 }
 
-/* 單格 */
 .cell {
   flex:1;
-  aspect-ratio:1/1; /* 正方形 */
-  background:#333;
+  height:40px;
+  background-color:#555;
   border-radius:8px;
   cursor:pointer;
 }
 
-/* 控制面板 */
-.control {
-  display:flex;
-  justify-content:center; /* 水平置中 */
-  flex-wrap:wrap;
-  gap:10px;
-  margin:20px;
-}
-
-.control button {
-  width:50px;
-  height:50px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  flex-shrink:0;
-}
-
-/* 清空按鈕置中 */
 #clearAll {
-  margin:20px auto;
-  display:block;
-  padding:8px 20px;
-  border-radius:8px;
+  margin-top:15px;
+  width:100%;
+  padding:10px;
   border:none;
+  border-radius:10px;
   cursor:pointer;
-}
-
-/* 手機版縮小 */
-@media(max-width:500px) {
-  .container {
-    max-width:90vw;
-  }
-  .row-number {
-    width:60px;
-    font-size:12px;
-  }
-  .cell {
-    font-size:10px;
-  }
-  .control button {
-    width:40px;
-    height:40px;
-  }
+  background:#0aa;
+  color:white;
 }
 </style>
 </head>
+
 <body>
 
-<h2>Artale羅密歐與茱麗葉組隊任務</h2>
-
-<div class="container" id="container"></div>
-
-<div class="control">
-  <button style="background:red" data-color="red"></button>
-  <button style="background:blue" data-color="blue"></button>
-  <button style="background:green" data-color="green"></button>
-  <button style="background:purple" data-color="purple"></button>
-  <button style="background:white" data-color=""></button> <!-- 清空格子 -->
+<!-- 🔒 密碼鎖 -->
+<div id="lockScreen">
+  <div style="text-align:center">
+    <h2>輸入房間密碼</h2>
+    <input id="passwordInput" type="password"
+      style="padding:10px; border-radius:8px; border:none; width:200px;">
+    <br><br>
+    <button onclick="checkPassword()"
+      style="padding:10px 20px; border:none; border-radius:8px; cursor:pointer;">
+      進入
+    </button>
+  </div>
 </div>
 
-<button id="clearAll">🧹 清空全部</button>
+<div class="wrapper">
+
+  <div class="top-bar">
+    <div>
+      房號：739745<br>
+      密碼：1234
+    </div>
+
+    <div class="control">
+      <button style="background:orange" data-color="orange"></button>
+      <button style="background:limegreen" data-color="limegreen"></button>
+      <button style="background:#3b82f6" data-color="#3b82f6"></button>
+      <button style="background:pink" data-color="pink"></button>
+      <button style="background:white" data-color=""></button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- 10~1 -->
+    <!-- (略：跟你之前一樣，我幫你保留) -->
+
+    <div class="row"><div class="row-number">10</div><div class="cells">
+      <div class="cell" id="cell_36"></div><div class="cell" id="cell_37"></div>
+      <div class="cell" id="cell_38"></div><div class="cell" id="cell_39"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">9</div><div class="cells">
+      <div class="cell" id="cell_32"></div><div class="cell" id="cell_33"></div>
+      <div class="cell" id="cell_34"></div><div class="cell" id="cell_35"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">8</div><div class="cells">
+      <div class="cell" id="cell_28"></div><div class="cell" id="cell_29"></div>
+      <div class="cell" id="cell_30"></div><div class="cell" id="cell_31"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">7</div><div class="cells">
+      <div class="cell" id="cell_24"></div><div class="cell" id="cell_25"></div>
+      <div class="cell" id="cell_26"></div><div class="cell" id="cell_27"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">6</div><div class="cells">
+      <div class="cell" id="cell_20"></div><div class="cell" id="cell_21"></div>
+      <div class="cell" id="cell_22"></div><div class="cell" id="cell_23"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">5</div><div class="cells">
+      <div class="cell" id="cell_16"></div><div class="cell" id="cell_17"></div>
+      <div class="cell" id="cell_18"></div><div class="cell" id="cell_19"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">4</div><div class="cells">
+      <div class="cell" id="cell_12"></div><div class="cell" id="cell_13"></div>
+      <div class="cell" id="cell_14"></div><div class="cell" id="cell_15"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">3</div><div class="cells">
+      <div class="cell" id="cell_8"></div><div class="cell" id="cell_9"></div>
+      <div class="cell" id="cell_10"></div><div class="cell" id="cell_11"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">2</div><div class="cells">
+      <div class="cell" id="cell_4"></div><div class="cell" id="cell_5"></div>
+      <div class="cell" id="cell_6"></div><div class="cell" id="cell_7"></div>
+    </div></div>
+
+    <div class="row"><div class="row-number">1</div><div class="cells">
+      <div class="cell" id="cell_0"></div><div class="cell" id="cell_1"></div>
+      <div class="cell" id="cell_2"></div><div class="cell" id="cell_3"></div>
+    </div></div>
+
+  </div>
+
+  <button id="clearAll">清空全部</button>
+
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-// 🔴 Firebase 設定
+// 🔥 Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBAs8oRMsuCePNxSoes4X-MLXbLuqr0P7w",
   authDomain: "artale-romeo-and-juliet.firebaseapp.com",
@@ -133,72 +213,60 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let selectedColor = "red";
+let selectedColor = "orange";
 
-const container = document.getElementById("container");
-const cellRefs = [];
+/* 點格子 */
+document.querySelectorAll(".cell").forEach(cell => {
+  cell.onclick = () => {
+    const id = cell.id.split("_")[1];
 
-// 建立 10 列，每列 4 格
-for (let row = 1; row <= 10; row++) {
-  const rowDiv = document.createElement("div");
-  rowDiv.className = "row";
+    if (selectedColor === "") {
+      remove(ref(db, "grid/" + id));
+    } else {
+      set(ref(db, "grid/" + id), { color: selectedColor });
+    }
+  };
+});
 
-  const rowNumber = document.createElement("div");
-  rowNumber.className = "row-number";
-  rowNumber.innerText = `第${row}台階`;
-  rowDiv.appendChild(rowNumber);
-
-  const cellsDiv = document.createElement("div");
-  cellsDiv.className = "cells";
-
-  for (let col = 0; col < 4; col++) {
-    const idx = (10 - row) * 4 + col;
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    cell.id = "cell_" + idx;
-
-    cell.onclick = () => {
-      if (selectedColor === "") {
-        remove(ref(db, "grid/" + idx));
-      } else {
-        set(ref(db, "grid/" + idx), {
-          color: selectedColor
-        });
-      }
-    };
-
-    cellsDiv.appendChild(cell);
-    cellRefs.push(cell);
-  }
-
-  rowDiv.appendChild(cellsDiv);
-  container.appendChild(rowDiv);
-}
-
-// 選顏色
+/* 選顏色 */
 document.querySelectorAll(".control button").forEach(btn => {
   btn.onclick = () => {
     selectedColor = btn.dataset.color;
   };
 });
 
-// 同步
+/* 同步 */
 onValue(ref(db, "grid"), (snapshot) => {
   const data = snapshot.val() || {};
-  cellRefs.forEach(c => {
-    c.style.background = "#333";
+
+  document.querySelectorAll(".cell").forEach(c => {
+    c.style.backgroundColor = "#555";
   });
+
   for (let i in data) {
     const cell = document.getElementById("cell_" + i);
     if (cell) {
-      cell.style.background = data[i].color;
+      cell.style.backgroundColor = data[i].color;
     }
   }
 });
 
-// 清空全部
+/* 清空 */
 document.getElementById("clearAll").onclick = () => {
   remove(ref(db, "grid"));
+};
+
+/* 🔒 密碼 */
+const ROOM_PASSWORD = "1234";
+
+window.checkPassword = function() {
+  const input = document.getElementById("passwordInput").value;
+
+  if (input === ROOM_PASSWORD) {
+    document.getElementById("lockScreen").style.display = "none";
+  } else {
+    alert("密碼錯誤");
+  }
 };
 </script>
 

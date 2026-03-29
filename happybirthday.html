@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生日冒險故事書 🎂</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#2b2b2b;
+  font-family:"Microsoft JhengHei", serif;
+}
+
+/* 📖 書本外框 */
+.book{
+  width:1000px;
+  height:620px;
+  background:#5a3b1a;
+  border-radius:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.6);
+  padding:20px;
+  position:relative;
+}
+
+/* 書頁 */
+.page{
+  width:100%;
+  height:100%;
+  background:#f6ecd2;
+  border-radius:12px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 0 40px rgba(0,0,0,0.15);
+}
+
+/* 書本中線 */
+.page::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  width:4px;
+  height:100%;
+  background:rgba(0,0,0,0.08);
+}
+
+/* 陽光感 */
+.page::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:0;
+  width:40%;
+  height:60%;
+  background:linear-gradient(120deg, rgba(255,255,255,0.35), transparent);
+}
+
+/* ===== 劇情圖片區 ===== */
+#scene{
+  position:absolute;
+  top:0;
+  width:100%;
+  height:75%;
+  display:none;
+}
+
+#scene img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  position:absolute;
+  opacity:0;
+  transition:opacity 1s;
+}
+
+.active{ opacity:1 !important; }
+
+/* ===== 對話框 ===== */
+.dialog{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:25%;
+  background:rgba(255,248,220,0.96);
+  border-top:3px solid #c9b07a;
+  padding:20px 30px;
+  box-sizing:border-box;
+  display:none;
+}
+
+#text{
+  font-size:20px;
+  color:#4a3b2a;
+  line-height:1.8;
+  min-height:60px;
+}
+
+/* 翻頁按鈕 */
+.nextBtn{
+  position:absolute;
+  right:25px;
+  bottom:20px;
+  padding:8px 18px;
+  border:none;
+  background:#c97b2e;
+  color:white;
+  border-radius:20px;
+  cursor:pointer;
+  box-shadow:0 3px 0 #8a4f16;
+  font-size:16px;
+}
+.nextBtn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 #8a4f16;
+}
+
+/* ===== 開始畫面 ===== */
+#startScreen{
+  position:absolute;
+  width:100%;
+  height:100%;
+  z-index:10;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+/* 背景圖 */
+#startScreen::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("start.png") center / cover no-repeat;
+  filter:brightness(0.7);
+  z-index:-1;
+}
+
+/* 中央面板 */
+.startPanel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  background:rgba(0,0,0,.35);
+  padding:30px 40px;
+  border-radius:16px;
+  backdrop-filter:blur(6px);
+}
+
+.startPanel h2{
+  margin:0 0 6px 0;
+}
+
+.startPanel input{
+  width:220px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+}
+
+/* 開始按鈕 */
+.startBtn{
+  padding:10px 22px;
+  border:none;
+  background:#ffb347;
+  color:#4a3b2a;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:bold;
+  box-shadow:0 3px 0 #c97b2e;
+}
+.startBtn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 #c97b2e;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" src="楓之谷 登入音樂 .mp3"></audio>
+
+<div id="card" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+">
+  <div style="
+    background:#fff8dc;
+    padding:30px 40px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  ">
+    <h2 style="color:#c97b2e;">🎂 小祕密 🎂</h2>
+    <p id="cardText" style="font-size:18px;color:#4a3b2a;"></p>
+    <button onclick="closeCard()" style="
+      padding:8px 20px;
+      border:none;
+      background:#c97b2e;
+      color:white;
+      border-radius:20px;
+      cursor:pointer;
+    ">關閉</button>
+  </div>
+</div>
+
+<!-- ===== 開始畫面 ===== -->
+<div id="startScreen">
+  <div class="startPanel">
+    <h2>📖 輸入冒險者的名字</h2>
+    <input id="nameInput" placeholder="Buta">
+    <button class="startBtn" onclick="startGame()">翻開故事書</button>
+  </div>
+</div>
+
+<!-- ===== 書本 ===== -->
+<div class="book">
+  <div class="page">
+
+    <div id="scene">
+      <img src="img1.png" class="active">
+      <img src="img2.png">
+      <img src="img3.png">
+      <img src="img4.png">
+      <img src="img5.png">
+      <img src="img6.png">
+      <img src="img7.png">
+      <img src="img8.png">
+      <img src="img9.png">
+    </div>
+
+    <div class="dialog">
+      <div id="text"></div>
+      <button class="nextBtn" onclick="next()">下一頁 ▶</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let playerName="Buta";
+let index=0;
+let imgIndex=0;
+const images=document.querySelectorAll("#scene img");
+const textDiv=document.getElementById("text");
+
+function showCard(){
+  document.getElementById("card").style.display="flex";
+  typeCardLines([
+    `Dear ${playerName}：`,
+    "",
+    "今天是妳很重要的一天 🎂",
+    "",
+    "這種有點感性的話，其實我不太會說",
+    "",
+    "但還是想告訴妳——",
+    "謝謝妳陪我一起留下這些回憶 😊",
+    "",
+    "雖然有時候我真的很調皮",
+    "可能會不小心惹妳不開心",
+    "",
+    "但其實我一直都很珍惜",
+    "我們一起相處的時光 ✨",
+    "",
+    "謝謝妳陪我度過好多個晚上",
+    "一起練功、一起解任務～",
+    "",
+    "那些看起來很普通的時間",
+    "其實都變成很重要的回憶了",
+    "",
+    "希望未來還能有更多這樣的時光",
+    "",
+    "也希望妳今年一切都順順利利 🌷",
+    "",
+    "還有…",
+    "希望我們可以變成更好的朋友",
+    "（還是其實已經是了 >< ）",
+    "",
+    "之後哪天真的一起去吃個飯吧 DD請客🍜",
+    "",
+    "🎂 生日快樂 🎉"
+  ]);
+}
+
+function closeCard(){
+  document.getElementById("card").style.display="none";
+}
+
+function typeCardLines(lines, lineIndex=0, charIndex=0){
+  const el = document.getElementById("cardText");
+
+  if(lineIndex === 0 && charIndex === 0){
+    el.innerHTML = "";
+  }
+
+  // 如果整段結束
+  if(lineIndex >= lines.length) return;
+
+  let currentLine = lines[lineIndex];
+
+  if(charIndex < currentLine.length){
+    el.innerHTML += currentLine.charAt(charIndex);
+    setTimeout(()=>{
+      typeCardLines(lines, lineIndex, charIndex+1);
+    }, 120);
+  }else{
+    // 換行 + 下一句
+    el.innerHTML += "<br>";
+    setTimeout(()=>{
+      typeCardLines(lines, lineIndex+1, 0);
+    }, 400);
+  }
+}
+
+function startGame(){
+  playerName=document.getElementById("nameInput").value||"Buta";
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("scene").style.display="block";
+  document.querySelector(".dialog").style.display="block";
+
+  const music=document.getElementById("music");
+  music.volume=0;
+  music.play();
+  let v=0;
+  const fade=setInterval(()=>{
+    v+=0.05;
+    music.volume=v;
+    if(v>=1) clearInterval(fade);
+  },100);
+
+  next();
+}
+
+const texts=[
+()=>`系統訊息：${playerName} 翻開了故事書…`,
+"",
+()=>`我遇見了 ${playerName}`,
+"",
+"這些畫面，好像都是一些回憶",
+"",
+"一起玩、一起亂跑的時候",
+"",
+"不知不覺就留下來了",
+"",
+()=>`🎉 ${playerName} 生日快樂 🎂`,
+"",
+"希望妳每天都開開心心",
+"不只是遊戲裡",
+"",
+"也希望未來還能繼續有這些時光 ✨",
+"",
+"👉 點這裡有小彩蛋"
+];
+
+function typeWriter(text,i=0){
+  if(i===0) textDiv.innerHTML="";
+  if(i<text.length){
+    textDiv.innerHTML+=text.charAt(i);
+    setTimeout(()=>typeWriter(text,i+1),30);
+  }
+}
+
+function next(){
+
+  // ✅ 到最後一頁就停止
+  if(index >= texts.length){
+    index = texts.length - 1;
+    return;
+  }
+
+  if(index!==0 && index%2===0){
+    images.forEach(img=>img.classList.remove("active"));
+    imgIndex=(imgIndex+1)%images.length;
+    images[imgIndex].classList.add("active");
+  }
+
+  let line=texts[index];
+  if(typeof line==="function") line=line();
+
+  if(line && line.includes("彩蛋")){
+    textDiv.innerHTML="<span style='color:#c97b2e;cursor:pointer'>👉 點我開啟祕密</span>";
+    textDiv.onclick=()=>showCard();
+
+    // ✅ 停在彩蛋頁（可選：鎖住按鈕）
+    document.querySelector(".nextBtn").innerText="未完待續... 💛";
+    document.querySelector(".nextBtn").disabled=true;
+    document.querySelector(".nextBtn").style.opacity=.6;
+
+  }else{
+    textDiv.onclick=null;
+    typeWriter(line||"");
+  }
+
+  index++;
+}
+</script>
+
+</body>
+</html>

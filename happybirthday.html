@@ -195,17 +195,32 @@ body{
   justify-content:center;
   align-items:center;
   z-index:999;
+  padding:20px;
+  box-sizing:border-box;
 ">
   <div style="
     background:#fff8dc;
-    padding:30px 40px;
+    padding:20px;
     border-radius:20px;
     text-align:center;
     box-shadow:0 10px 30px rgba(0,0,0,0.4);
+
+    width:100%;
+    max-width:420px;
+    max-height:80vh;
+    overflow-y:auto;
   ">
-    <h2 style="color:#c97b2e;">🎂 小祕密 🎂</h2>
-    <p id="cardText" style="font-size:18px;color:#4a3b2a;"></p>
+    <h2 style="color:#c97b2e;">🎂 生日快樂 🎂</h2>
+
+    <p id="cardText" style="
+      font-size:16px;
+      color:#4a3b2a;
+      line-height:1.6;
+      word-break:break-word;
+    "></p>
+
     <button onclick="closeCard()" style="
+      margin-top:15px;
       padding:8px 20px;
       border:none;
       background:#c97b2e;
@@ -285,12 +300,13 @@ function showCard(){
     "也希望妳今年一切都順順利利 🌷",
     "",
     "還有…",
-    "希望我們可以變成更好的朋友",
-    "（還是其實已經是了 >< ）",
+    "雖然現在我們只認識網路上的朋友",
+    "希望有天現實生活中我們也能跟在網路上一樣，變成好朋友~",
     "",
-    "之後哪天真的一起去吃個飯吧 DD請客🍜",
+    "之後哪天一起去吃個飯吧 🍜（DD請客）",
     "",
-    "🎂 生日快樂 🎉"
+    "🎂by調皮的DD🎉",
+  
   ]);
 }
 
@@ -390,7 +406,7 @@ function next(){
   if(typeof line==="function") line=line();
 
   if(line && line.includes("彩蛋")){
-    textDiv.innerHTML="<span style='color:#c97b2e;cursor:pointer'>👉 點我開啟祕密</span>";
+    textDiv.innerHTML="<span style='color:#c97b2e;cursor:pointer'>👉 點我領取任務獎勵</span>";
     textDiv.onclick=()=>showCard();
 
     // ✅ 停在彩蛋頁（可選：鎖住按鈕）
